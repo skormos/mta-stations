@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+      ul.toolbar {
+        list-style-type:none;
+        margin:0;
+        padding:0;
+      }
+      li.toolbar {
+        display:inline;
+      }
+      div.station {color:black;font-size:18px;}
+      div.Line1 {color:red;}
+      div.Line6 {color:green;}
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHA6SJsEhBtR6ToY6h320v7PuHdmSky8E&sensor=false" >
+    </script>
+    <script type="text/javascript"
+      src="./json2.js" >
+    </script>
+    <script type="text/javascript">
+      var fusionLayer;
+      var map;
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng(40.772222,-73.953094),
+          zoom: 12, //higher number, closer in.
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        map = new google.maps.Map(document.getElementById("map_canvas"),mapOptions);
+
+        fusionLayer = new google.maps.FusionTablesLayer({
+          query: {
+            select: 'GeoLat',
+            from: '127WgHz-iEjw52S9efvZdsAeuEWAVuwNBgBJezvE'
+          },
+          styles: [{
+            where: "Entrance_Staffing != 'FULL' AND Free_Crossover = 'FALSE'",
+            markerOptions: {
+              iconName: "small_green"
+            }
+          }, {
+            where: "Entrance_Staffing = 'NONE' AND Free_Crossover = 'TRUE'",
+            markerOptions: {
+              iconName: "red_blank"
+            }
+          }, {
+            where: "Entrance_Staffing != 'FULL' AND Free_Crossover = 'TRUE'",
+            markerOptions: {
+              iconName: "grn_blank"
+            }
+          }, {
+            where: "Entry = 'NO'",
+            markerOptions: {
+              iconName: "forbidden"
+            }
+          }, {
+            where: "ADA = 'TRUE' AND Entrance_Type != 'Stair'",
+            markerOptions: {
+              iconName: "rec_wheel_chair_accessible"
+            }
+          }]
+        });
+        fusionLayer.setMap(map);
+      }
+      function showLayer() {
+        if (map != null && fusionLayer != null && fusionLayer.getMap() == null) {
+          fusionLayer.setMap(map);
+        }
+      }
+      function hideLayer() {
+        if (map != null && fusionLayer != null && fusionLayer.getMap() != null) {
+          fusionLayer.setMap(null);
+        }
+      }
+    </script>
+  </head>
+  <body onload="initialize()">
+    <div id="map_canvas" style="width:100%; height:90%"></div>
+    <div style='width:50%; margin-left:auto; margin-right:auto;'>
+      <ul class='toolbar'>
+        <li class='toolbar'><a href="javascript:showLayer();">Show Layer</a></li>
+        <li class='toolbar'><a href="javascript:hideLayer();">Hide Layer</a></li>
+      </ul>
+    </div>
+  </body>
+</html>

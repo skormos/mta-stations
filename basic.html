@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 100% }
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHA6SJsEhBtR6ToY6h320v7PuHdmSky8E&sensor=false" >
+    </script>
+    <script type="text/javascript"
+      src="./json2.js" >
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng(40.772222,-73.953094),
+          zoom: 12, //higher number, closer in.
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        var xmlHttp = new XMLHttpRequest();
+        var theUrl = "./StationEntrances.json";
+        var jsonArray;
+        xmlHttp.onreadystatechange = function() {
+        	if (xmlHttp.readyState == 4) {
+        		jsonArray = JSON.parse(xmlHttp.responseText);
+        	}
+		};
+        xmlHttp.open( "GET", theUrl, false );
+        xmlHttp.send();
+
+        var map = new google.maps.Map(document.getElementById("map_canvas"),mapOptions);
+
+        var transitLayer = new google.maps.TransitLayer();
+        transitLayer.setMap(map);
+
+        var marker = null;
+        for (var row=0; row < jsonArray.length; row++) {
+	        marker = new google.maps.Marker({
+	            position: new google.maps.LatLng(jsonArray[row].latitude/1000000, jsonArray[row].longitude/1000000),
+	            title:jsonArray[row].station_name
+	        });
+	        marker.setMap(map);
+        }
+      }
+    </script>
+  </head>
+  <body onload="initialize()">
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+  </body>
+</html>
+
+<!--
+BMT,Astoria,Astoria-Ditmars Blvd,N,Q,,,,,,,,,,FALSE,,TRUE,Stair,YES,,FULL,31st St,23rd Ave,NE,40775025,-73911891
+BMT,Astoria,Astoria-Ditmars Blvd,N,Q,,,,,,,,,,FALSE,,TRUE,Stair,YES,,FULL,31st St,23rd Ave,NW,40775149,-73912074
+BMT,Astoria,Astoria-Ditmars Blvd,N,Q,,,,,,,,,,FALSE,,TRUE,Stair,YES,,FULL,31st St,23rd Ave,NE,40774810,-73912151
+BMT,Astoria,Astoria-Ditmars Blvd,N,Q,,,,,,,,,,FALSE,,TRUE,Stair,YES,,FULL,31st St,23rd Ave,NW,40774938,-73912337
+
+https://maps.google.com/?ll=40.77613,-73.910737&spn=0.005557,0.011362&t=m&z=17
+ -->
